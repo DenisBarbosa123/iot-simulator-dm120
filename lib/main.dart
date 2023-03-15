@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'package:dm120_mqtt_client/local_notification.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'thermometer_widget.dart';
 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
 
 void main() => runApp(const MyApp());
 
@@ -43,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void initState() {
     super.initState();
+    LocalNotification.initialize(flutterLocalNotificationsPlugin);
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _connect());
   }
@@ -132,6 +137,11 @@ class _MyHomePageState extends State<MyHomePage> {
         _temp = double.parse(responsePayload['temperature'].toString());
         _hum = double.parse(responsePayload['humidity'].toString());
       });
+
+      LocalNotification.showBigTextNotification(
+          title: "Humidity Alert",
+          body: "Your soil has humidity of $_hum",
+          fln: flutterLocalNotificationsPlugin);
     });
 
     return 0;

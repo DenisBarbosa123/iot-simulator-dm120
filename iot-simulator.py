@@ -55,7 +55,7 @@ while True:
   sensor.measure()
   # Randomly generates temperature and Humidity values
   message = ujson.dumps({
-    "temp": randint(20, 30),
+    "temperature": randint(20, 30),
     "humidity": randint(80, 90),
   })
   if message != prev_weather:
