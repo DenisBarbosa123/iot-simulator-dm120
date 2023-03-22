@@ -65,4 +65,5 @@ while True:
     prev_weather = message
   else:
     print("No change")
-  time.sleep(1)
+  # wait for 5 seconds
+  time.sleep(5)

@@ -15,7 +15,6 @@ void main() => runApp(const MyApp());
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -39,15 +38,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   final client = MqttServerClient('test.mosquitto.org', '');
-
   var pongCount = 0;
-
   double _temp = 20;
   double _hum = 50;
 
+  @override
   void initState() {
     super.initState();
+    ///Initialize notification component
     LocalNotification.initialize(flutterLocalNotificationsPlugin);
+
+    ///Connect mqtt client
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _connect());
   }
@@ -73,6 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _connect() async {
+    ///Configuring mqtt client
     client.logging(on: true);
     client.setProtocolV311();
     client.keepAlivePeriod = 20;
@@ -97,11 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       await client.connect();
     } on NoConnectionException catch (e) {
-      // Raised by the client when connection fails.
+      /// Raised by the client when connection fails.
       print('EXAMPLE::client exception - $e');
       client.disconnect();
     } on SocketException catch (e) {
-      // Raised by the socket layer
+      /// Raised by the socket layer
       print('EXAMPLE::socket exception - $e');
       client.disconnect();
     }
@@ -120,6 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const topic = 'wokwi-iot-simulator-dm120/test';
     client.subscribe(topic, MqttQos.atMostOnce);
 
+    ///Listener used to capture messages
     client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       final recMess = c![0].payload as MqttPublishMessage;
       final pt =
@@ -133,11 +136,13 @@ class _MyHomePageState extends State<MyHomePage> {
       Map responsePayload = json.decode(pt);
       print(responsePayload);
 
+      ///Update values received from mqtt server
       setState(() {
         _temp = double.parse(responsePayload['temperature'].toString());
         _hum = double.parse(responsePayload['humidity'].toString());
       });
 
+      ///Show notification after receiving message
       LocalNotification.showBigTextNotification(
           title: "Humidity Alert",
           body: "Your soil has humidity of $_hum",

@@ -1,6 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LocalNotification {
+
+  ///Initialize notification component
   static Future initialize (FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
     print("Initializing FlutterLocalNotificationsPlugin");
     var androidInitialize = new AndroidInitializationSettings('mipmap/ic_launcher');
@@ -10,6 +12,7 @@ class LocalNotification {
     await flutterLocalNotificationsPlugin.initialize(initiationSettings);
   }
 
+  ///Show Notification
   static Future showBigTextNotification({var id=0, required String title, required String body,
     var payload, required FlutterLocalNotificationsPlugin fln}) async {
     print("Show big text notification $title $body");
@@ -27,7 +30,6 @@ class LocalNotification {
 
     await fln.show(0, title, body, notificationDetails);
   }
-
 }
 
 
